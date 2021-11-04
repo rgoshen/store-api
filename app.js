@@ -1,17 +1,20 @@
-require("dotenv").config();
+require('dotenv').config();
 // async errors
 
-const express = require("express");
+const express = require('express');
 const app = express();
 
-const notFoundMiddleware = require("./middleware/not-found");
-const errorHandlerMiddleware = require("./middleware/error-handler");
+const connectDB = require('./db/connect');
+
+const notFoundMiddleware = require('./middleware/not-found');
+const errorHandlerMiddleware = require('./middleware/error-handler');
+const { connect } = require('mongoose');
 
 // middleware
 app.use(express.json());
 
 // test route
-app.get("/", (req, res) => {
+app.get('/', (req, res) => {
   res.send('<h1>Store API</h1><a href="/api/v1/products">products route</a>');
 });
 
@@ -21,9 +24,10 @@ app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
 const PORT = process.env.PORT || 3000;
-const start = () => {
+const start = async () => {
   try {
     // connectDB
+    await connectDB(process.env.MONGO_URI);
     app.listen(
       PORT,
       console.log(`Server it listening on http://localhost:${PORT}...`)
